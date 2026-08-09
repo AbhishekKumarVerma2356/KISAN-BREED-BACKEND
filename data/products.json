@@ -1,0 +1,104 @@
+{
+  "products": [
+    {
+      "slug": "ghee-special",
+      "name": "Ghee Special",
+      "category": "Agri Nutrition",
+      "shortDescription": "A premium showcase product card using your uploaded Ghee visuals with a clean and modern presentation.",
+      "description": "Ghee Special is presented as a strong agricultural support product with an appealing premium layout. This default description is included as placeholder content and can be replaced anytime with actual product copy.",
+      "packSize": "250 ml / 500 ml / 1 L",
+      "features": [
+        "Farmer-friendly product presentation",
+        "Suitable for premium agri branding",
+        "Optimized for mobile and desktop visibility"
+      ],
+      "images": [
+        "assets/images/ghee-1.jpeg",
+        "assets/images/ghee-2.jpeg"
+      ]
+    },
+    {
+      "slug": "glow-agri",
+      "name": "Glow Agri",
+      "category": "Plant Support",
+      "shortDescription": "A visually rich product section powered by your uploaded package images and dynamic routing.",
+      "description": "Glow Agri is displayed as a dependable product for agricultural use with a layout focused on clarity, trust, and modern UI. The text is default placeholder content for now.",
+      "packSize": "500 ml / 1 L",
+      "features": [
+        "Dynamic JSON product details",
+        "Dedicated product page",
+        "Easy future content replacement"
+      ],
+      "images": [
+        "assets/images/glow-agri-1.png",
+        "assets/images/glow-agri-2.png"
+      ]
+    },
+    {
+      "slug": "glow-liqvitonic",
+      "name": "Glow Liqvitonic",
+      "category": "Growth Tonic",
+      "shortDescription": "Styled to highlight crop vitality and growth support in a premium product card format.",
+      "description": "Glow Liqvitonic is shown as a growth-support focused product with attention-grabbing visuals and responsive design. This placeholder content can be customized with real agricultural specifications later.",
+      "packSize": "250 ml / 500 ml",
+      "features": [
+        "Premium visual emphasis",
+        "Biotech-inspired page layout",
+        "Responsive image-first design"
+      ],
+      "images": [
+        "assets/images/glow-liqvitonic-1.png",
+        "assets/images/glow-liqvitonic-2.png"
+      ]
+    },
+    {
+      "slug": "glow-soil",
+      "name": "Glow Soil",
+      "category": "Soil Health",
+      "shortDescription": "Built to represent soil nutrition and field support using the uploaded product images.",
+      "description": "Glow Soil is positioned as a soil-focused product in this demo website. The section is meant to look premium, trustworthy, and informative on every screen size.",
+      "packSize": "1 L / 5 L",
+      "features": [
+        "Soil-health focused branding",
+        "Designed for all device types",
+        "Simple future updates through JSON"
+      ],
+      "images": [
+        "assets/images/glow-soil-1.png",
+        "assets/images/glow-soil-2.png"
+      ]
+    },
+    {
+      "slug": "livo-tic-spray",
+      "name": "Livo Tic Spray",
+      "category": "Crop Care",
+      "shortDescription": "Compact product display layout for quick scanning and easy mobile readability.",
+      "description": "Livo Tic Spray is displayed in a card layout tailored for product discovery and enquiry generation. This default text helps fill the site until real marketing copy is available.",
+      "packSize": "100 ml / 250 ml",
+      "features": [
+        "Great for enquiry sections",
+        "Works with image-heavy cards",
+        "Fast-loading UI structure"
+      ],
+      "images": [
+        "assets/images/livo-tic-sprey.jpeg"
+      ]
+    },
+    {
+      "slug": "rice-special",
+      "name": "Rice Special",
+      "category": "Crop Nutrition",
+      "shortDescription": "An example rice-focused product card styled for agricultural confidence and clean design.",
+      "description": "Rice Special is included as a default product entry using your uploaded image. It fits neatly into the KISAN BREED product catalog and product detail flow.",
+      "packSize": "500 ml / 1 L / 5 L",
+      "features": [
+        "Crop-specific showcase style",
+        "Good visual balance",
+        "Suitable for future real specs"
+      ],
+      "images": [
+        "assets/images/rice.jpeg"
+      ]
+    }
+  ]
+}

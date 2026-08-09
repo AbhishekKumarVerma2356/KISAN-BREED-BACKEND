@@ -1,0 +1,19 @@
+{
+  "testimonials": [
+    {
+      "name": "Farmer Partner",
+      "location": "Uttar Pradesh",
+      "message": "The upgraded layout looks modern and trustworthy, especially on mobile."
+    },
+    {
+      "name": "Retail Associate",
+      "location": "India",
+      "message": "Product cards feel premium and the images are presented very clearly."
+    },
+    {
+      "name": "Agri Distributor",
+      "location": "Ambedkar Nagar",
+      "message": "The green, yellow and orange combination makes the brand stand out nicely."
+    }
+  ]
+}

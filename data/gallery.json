@@ -1,0 +1,44 @@
+{
+  "gallery": [
+    {
+      "title": "Brand Banner",
+      "description": "Primary hero visual from your uploaded brand artwork.",
+      "image": "assets/images/brand-banner.jpeg"
+    },
+    {
+      "title": "Brand Logo",
+      "description": "Main KISAN BREED identity image.",
+      "image": "assets/images/brand-logo.jpeg"
+    },
+    {
+      "title": "Ghee Product",
+      "description": "Uploaded product visual used in gallery.",
+      "image": "assets/images/ghee-1.jpeg"
+    },
+    {
+      "title": "Glow Agri",
+      "description": "Uploaded package design image.",
+      "image": "assets/images/glow-agri-1.png"
+    },
+    {
+      "title": "Glow Liqvitonic",
+      "description": "Uploaded product image for dynamic gallery use.",
+      "image": "assets/images/glow-liqvitonic-1.png"
+    },
+    {
+      "title": "Glow Soil",
+      "description": "Uploaded soil product artwork.",
+      "image": "assets/images/glow-soil-1.png"
+    },
+    {
+      "title": "Livo Tic Spray",
+      "description": "Single visual entry for crop-care section.",
+      "image": "assets/images/livo-tic-sprey.jpeg"
+    },
+    {
+      "title": "Rice Product",
+      "description": "Rice-themed visual for catalog and gallery.",
+      "image": "assets/images/rice.jpeg"
+    }
+  ]
+}

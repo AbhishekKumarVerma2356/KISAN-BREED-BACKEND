@@ -1,0 +1,16 @@
+{
+  "faqs": [
+    {
+      "question": "Is this website fully responsive?",
+      "answer": "Yes. The layout is designed for small mobile, large mobile, tablet, laptop, desktop, and wide screens."
+    },
+    {
+      "question": "Can I replace the default product descriptions later?",
+      "answer": "Yes. Product information is stored in JSON files so updating names, descriptions, pack sizes, and images is straightforward."
+    },
+    {
+      "question": "Can certificate images be added later?",
+      "answer": "Yes. The current project includes blank certificate placeholders that you can replace with real certificate images anytime."
+    }
+  ]
+}

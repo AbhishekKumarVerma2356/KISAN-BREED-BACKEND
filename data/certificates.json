@@ -1,0 +1,19 @@
+{
+  "certificates": [
+    {
+      "title": "Certificate 1",
+      "description": "Placeholder for future certificate upload.",
+      "image": "assets/images/certificate-placeholder.svg"
+    },
+    {
+      "title": "Certificate 2",
+      "description": "Placeholder for future certificate upload.",
+      "image": "assets/images/certificate-placeholder.svg"
+    },
+    {
+      "title": "Certificate 3",
+      "description": "Placeholder for future certificate upload.",
+      "image": "assets/images/certificate-placeholder.svg"
+    }
+  ]
+}

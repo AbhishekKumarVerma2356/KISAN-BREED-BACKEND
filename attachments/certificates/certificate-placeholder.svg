@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+  <rect width="1200" height="800" fill="#fffaf0"/>
+  <rect x="80" y="80" width="1040" height="640" rx="28" fill="#ffffff" stroke="#d9e6d5" stroke-width="4"/>
+  <rect x="130" y="130" width="940" height="540" rx="20" fill="#f9fcf6" stroke="#c9dbc0" stroke-width="2" stroke-dasharray="12 10"/>
+  <text x="600" y="330" text-anchor="middle" font-size="40" fill="#166534" font-family="Arial" font-weight="700">Certificate Placeholder</text>
+  <text x="600" y="390" text-anchor="middle" font-size="24" fill="#8b5e00" font-family="Arial">Add your certificate image here</text>
+</svg>

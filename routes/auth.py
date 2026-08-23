@@ -17,13 +17,6 @@ from models.user import User
 from models.address import Address
 from models.revoked_token import RevokedToken
 
-from schemas.auth_schema import (
-    UserSignup,
-    UserLogin,
-    UpdateProfile,
-    ChangePassword,
-)
-
 from utils.security import (
     hash_password,
     verify_password,
@@ -35,6 +28,29 @@ from utils.jwt_handler import (
     SECRET_KEY,
     ALGORITHM,
 )
+
+from datetime import datetime, timezone
+
+from schemas.auth_schema import (
+    UserSignup,
+    UserLogin,
+    UpdateProfile,
+    ChangePassword,
+    ForgotPasswordRequest,
+    VerifyForgotPasswordOTP,
+    ResetPassword,
+)
+
+from models.password_reset_otp import PasswordResetOTP
+
+from utils.password_reset import (
+    generate_otp,
+    hash_otp,
+    verify_otp,
+    get_otp_expiry,
+)
+
+from utils.email import send_password_reset_otp
 
 
 router = APIRouter(
@@ -745,4 +761,302 @@ def logout(
 
     return {
         "message": "Logout successful"
+    }
+
+# =========================================================
+# FORGOT PASSWORD - SEND OTP
+# =========================================================
+
+@router.post("/forgot-password")
+def forgot_password(
+    data: ForgotPasswordRequest,
+    db: Session = Depends(get_db),
+):
+
+    # =====================================================
+    # FIND USER
+    # =====================================================
+
+    user = (
+        db.query(User)
+        .filter(
+            User.email == data.email
+        )
+        .first()
+    )
+
+    # =====================================================
+    # SECURITY
+    # =====================================================
+    # Do not reveal whether email exists.
+
+    if not user:
+        return {
+            "message": (
+                "If an account exists with this email, "
+                "a password reset OTP has been sent."
+            )
+        }
+
+    # =====================================================
+    # DELETE OLD OTPs
+    # =====================================================
+
+    db.query(
+        PasswordResetOTP
+    ).filter(
+        PasswordResetOTP.email == data.email
+    ).delete(
+        synchronize_session=False
+    )
+
+    # =====================================================
+    # GENERATE OTP
+    # =====================================================
+
+    otp = generate_otp()
+
+    # =====================================================
+    # CREATE OTP RECORD
+    # =====================================================
+
+    otp_record = PasswordResetOTP(
+        email=data.email,
+        otp_hash=hash_otp(otp),
+        expires_at=get_otp_expiry(),
+        is_verified=False,
+    )
+
+    db.add(otp_record)
+
+    db.commit()
+
+    # =====================================================
+    # SEND EMAIL
+    # =====================================================
+
+    try:
+
+        send_password_reset_otp(
+            recipient_email=data.email,
+            otp=otp,
+        )
+
+    except Exception as error:
+
+        db.delete(otp_record)
+        db.commit()
+
+        print(
+            "PASSWORD RESET EMAIL ERROR:",
+            error,
+        )
+
+        raise HTTPException(
+            status_code=500,
+            detail="Unable to send password reset email",
+        )
+
+    return {
+        "message": (
+            "If an account exists with this email, "
+            "a password reset OTP has been sent."
+        )
+    }
+
+# =========================================================
+# FORGOT PASSWORD - VERIFY OTP
+# =========================================================
+
+@router.post("/forgot-password/verify-otp")
+def verify_forgot_password_otp(
+    data: VerifyForgotPasswordOTP,
+    db: Session = Depends(get_db),
+):
+
+    # =====================================================
+    # GET OTP
+    # =====================================================
+
+    otp_record = (
+        db.query(PasswordResetOTP)
+        .filter(
+            PasswordResetOTP.email == data.email
+        )
+        .order_by(
+            PasswordResetOTP.created_at.desc()
+        )
+        .first()
+    )
+
+    if not otp_record:
+
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid or expired OTP",
+        )
+
+    # =====================================================
+    # CHECK ALREADY VERIFIED
+    # =====================================================
+
+    if otp_record.is_verified:
+
+        raise HTTPException(
+            status_code=400,
+            detail="OTP has already been used",
+        )
+
+    # =====================================================
+    # CHECK EXPIRY
+    # =====================================================
+
+    now = datetime.now(timezone.utc)
+
+    expires_at = otp_record.expires_at
+
+    # Handle databases returning naive datetime
+    if expires_at.tzinfo is None:
+        expires_at = expires_at.replace(
+            tzinfo=timezone.utc
+        )
+
+    if now > expires_at:
+
+        raise HTTPException(
+            status_code=400,
+            detail="OTP has expired. Please request a new OTP.",
+        )
+
+    # =====================================================
+    # VERIFY OTP
+    # =====================================================
+
+    if not verify_otp(
+        data.otp,
+        otp_record.otp_hash,
+    ):
+
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid OTP",
+        )
+
+    # =====================================================
+    # MARK VERIFIED
+    # =====================================================
+
+    otp_record.is_verified = True
+
+    db.commit()
+
+    return {
+        "message": "OTP verified successfully",
+        "verified": True,
+    }
+
+# =========================================================
+# FORGOT PASSWORD - RESET PASSWORD
+# =========================================================
+
+@router.post("/forgot-password/reset")
+def reset_forgotten_password(
+    data: ResetPassword,
+    db: Session = Depends(get_db),
+):
+
+    # =====================================================
+    # FIND USER
+    # =====================================================
+
+    user = (
+        db.query(User)
+        .filter(
+            User.email == data.email
+        )
+        .first()
+    )
+
+    if not user:
+
+        raise HTTPException(
+            status_code=400,
+            detail="Unable to reset password",
+        )
+
+    # =====================================================
+    # GET OTP
+    # =====================================================
+
+    otp_record = (
+        db.query(PasswordResetOTP)
+        .filter(
+            PasswordResetOTP.email == data.email,
+            PasswordResetOTP.is_verified == True,
+        )
+        .order_by(
+            PasswordResetOTP.created_at.desc()
+        )
+        .first()
+    )
+
+    if not otp_record:
+
+        raise HTTPException(
+            status_code=400,
+            detail="OTP verification required",
+        )
+
+    # =====================================================
+    # CHECK EXPIRY
+    # =====================================================
+
+    now = datetime.now(timezone.utc)
+
+    expires_at = otp_record.expires_at
+
+    if expires_at.tzinfo is None:
+        expires_at = expires_at.replace(
+            tzinfo=timezone.utc
+        )
+
+    if now > expires_at:
+
+        raise HTTPException(
+            status_code=400,
+            detail="OTP has expired. Please request a new OTP.",
+        )
+
+    # =====================================================
+    # VERIFY OTP AGAIN
+    # =====================================================
+
+    if not verify_otp(
+        data.otp,
+        otp_record.otp_hash,
+    ):
+
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid OTP",
+        )
+
+    # =====================================================
+    # UPDATE PASSWORD
+    # =====================================================
+
+    user.password_hash = hash_password(
+        data.new_password
+    )
+
+    # =====================================================
+    # DELETE USED OTP
+    # =====================================================
+
+    db.delete(otp_record)
+
+    db.commit()
+
+    return {
+        "message": "Password reset successfully",
     }

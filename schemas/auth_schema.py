@@ -133,3 +133,46 @@ class ChangePassword(BaseModel):
         ...,
         min_length=6
     )
+
+# =========================================================
+# FORGOT PASSWORD
+# =========================================================
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+
+# =========================================================
+# VERIFY FORGOT PASSWORD OTP
+# =========================================================
+
+class VerifyForgotPasswordOTP(BaseModel):
+    email: EmailStr
+
+    otp: str = Field(
+        ...,
+        min_length=6,
+        max_length=6,
+        pattern=r"^[0-9]{6}$"
+    )
+
+
+# =========================================================
+# RESET PASSWORD
+# =========================================================
+
+class ResetPassword(BaseModel):
+
+    email: EmailStr
+
+    otp: str = Field(
+        ...,
+        min_length=6,
+        max_length=6,
+        pattern=r"^[0-9]{6}$"
+    )
+
+    new_password: str = Field(
+        ...,
+        min_length=6
+    )

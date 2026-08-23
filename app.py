@@ -10,6 +10,7 @@ from routes.admin_product import router as admin_product_router
 from routes.cart import router as cart_router
 from routes.home import router as home_router
 from routes.contact import router as contact_router
+from routes.reviews import router as reviews_router
 
 from utils.database import Base, engine
 from models.user import User
@@ -68,6 +69,8 @@ app.include_router(cart_router)
 app.include_router(home_router)
 
 app.include_router(contact_router)
+
+app.include_router(reviews_router)
 
 
 # =========================================================

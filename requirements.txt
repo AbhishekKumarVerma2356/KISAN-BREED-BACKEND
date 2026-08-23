@@ -10,3 +10,4 @@ pydantic
 email-validator
 python-slugify
 python-multipart
+pillow

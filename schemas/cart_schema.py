@@ -1,8 +1,9 @@
 from pydantic import BaseModel
+from uuid import UUID
 
 
 class AddCart(BaseModel):
-    user_id: int
+    user_id: UUID
     product_id: int
     quantity: int = 1
 

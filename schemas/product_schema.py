@@ -1,44 +1,33 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class ProductResponse(BaseModel):
+
     id: int
-
     name: str
-
     slug: str
-
     category: str
 
-    short_description: str
-
-    description: str
+    # Optional product description
+    short_description: str | None = None
+    description: str | None = None
 
     price: float
-
     discount: float = 0
 
-    image: str
+    image: str | None = None
 
-    # =========================================================
-    # QUANTITY
-    # =========================================================
+    # Quantity
+    quantity: float = 1
 
-    quantity: float
+    # Unit of measure
+    unit_of_measure: str = "piece"
 
-    # =========================================================
-    # UNIT OF MEASURE
-    # =========================================================
-
-    unit_of_measure: str
-
-    # =========================================================
-    # REVIEW INFORMATION
-    # =========================================================
-
+    # Review information
     avg_review: float = 0
-
     review_count: int = 0
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(
+        from_attributes=True,
+        populate_by_name=True
+    )

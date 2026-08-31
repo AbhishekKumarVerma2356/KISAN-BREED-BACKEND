@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from utils.database import get_db
 from models.product import Product
 from models.review import Review
+from schemas.product_schema import ProductResponse
 
 
 router = APIRouter(
@@ -14,6 +15,7 @@ router = APIRouter(
 
 # =========================================================
 # HELPER FUNCTION
+# GET PRODUCT REVIEW INFORMATION
 # =========================================================
 
 def get_product_review_data(
@@ -21,8 +23,7 @@ def get_product_review_data(
     product_id: int
 ):
     """
-    Get average rating and review count
-    for a product.
+    Get average rating and review count for a product.
 
     Only active reviews are considered.
     """
@@ -60,10 +61,14 @@ def get_product_review_data(
 # GET ALL PRODUCTS
 # =========================================================
 
-@router.get("/products")
+@router.get(
+    "/products",
+    response_model=list[ProductResponse]
+)
 def get_products(
     db: Session = Depends(get_db)
 ):
+
     products = (
         db.query(Product)
         .all()
@@ -73,6 +78,10 @@ def get_products(
 
     for item in products:
 
+        # -------------------------------------------------
+        # REVIEW DATA
+        # -------------------------------------------------
+
         avg_review, review_count = (
             get_product_review_data(
                 db,
@@ -80,63 +89,96 @@ def get_products(
             )
         )
 
-        result.append(
-            {
-                "id": item.id,
+        # -------------------------------------------------
+        # PRODUCT RESPONSE
+        # -------------------------------------------------
 
-                "name": item.name,
+        result.append({
 
-                "slug": item.slug,
+            "id": item.id,
 
-                "category": item.category,
+            "name": item.name,
 
-                "shortDescription": (
-                    item.short_description
-                ),
+            "slug": item.slug,
 
-                "description": (
-                    item.description
-                ),
+            "category": item.category,
 
-                "price": (
-                    float(item.price)
-                    if item.price is not None
-                    else 0
-                ),
+            "short_description": (
+                item.short_description
+                if item.short_description
+                else None
+            ),
 
-                "discount": (
-                    float(item.discount)
-                    if item.discount is not None
-                    else 0
-                ),
+            "description": (
+                item.description
+                if item.description
+                else None
+            ),
 
-                "quantity": (
-                    float(item.quantity)
-                    if item.quantity is not None
-                    else 1
-                ),
+            # -------------------------------------------------
+            # PRICE
+            # -------------------------------------------------
 
-                "unitOfMeasure": (
-                    item.unit_of_measure
-                    or "piece"
-                ),
+            "price": (
+                float(item.price)
+                if item.price is not None
+                else 0
+            ),
 
-                "avgReview": round(
-                    avg_review,
-                    2
-                ),
+            # -------------------------------------------------
+            # DISCOUNT
+            # Taken directly from products table
+            # -------------------------------------------------
 
-                "reviewCount": review_count,
+            "discount": (
+                float(item.discount)
+                if item.discount is not None
+                else 0
+            ),
 
-                "image": (
-                    f"http://localhost:8000/"
-                    f"attachments/products/"
-                    f"{item.image}"
-                    if item.image
-                    else None
-                )
-            }
-        )
+            # -------------------------------------------------
+            # IMAGE
+            # -------------------------------------------------
+
+            "image": (
+                f"http://localhost:8000/"
+                f"attachments/products/"
+                f"{item.image}"
+                if item.image
+                else None
+            ),
+
+            # -------------------------------------------------
+            # QUANTITY
+            # -------------------------------------------------
+
+            "quantity": (
+                float(item.quantity)
+                if item.quantity is not None
+                else 1
+            ),
+
+            # -------------------------------------------------
+            # UNIT OF MEASURE
+            # -------------------------------------------------
+
+            "unitOfMeasure": (
+                item.unit_of_measure
+                if item.unit_of_measure
+                else "piece"
+            ),
+
+            # -------------------------------------------------
+            # REVIEW INFORMATION
+            # -------------------------------------------------
+
+            "avgReview": round(
+                avg_review,
+                2
+            ),
+
+            "reviewCount": review_count
+        })
 
     return result
 
@@ -145,11 +187,18 @@ def get_products(
 # GET PRODUCT BY SLUG
 # =========================================================
 
-@router.get("/products/{slug}")
+@router.get(
+    "/products/{slug}",
+    response_model=ProductResponse
+)
 def get_product(
     slug: str,
     db: Session = Depends(get_db)
 ):
+
+    # -------------------------------------------------
+    # FIND PRODUCT
+    # -------------------------------------------------
 
     product = (
         db.query(Product)
@@ -159,15 +208,20 @@ def get_product(
         .first()
     )
 
+    # -------------------------------------------------
+    # PRODUCT NOT FOUND
+    # -------------------------------------------------
+
     if not product:
+
         raise HTTPException(
             status_code=404,
             detail="Product not found"
         )
 
-    # =====================================================
-    # GET REVIEW INFORMATION
-    # =====================================================
+    # -------------------------------------------------
+    # REVIEW DATA
+    # -------------------------------------------------
 
     avg_review, review_count = (
         get_product_review_data(
@@ -176,11 +230,12 @@ def get_product(
         )
     )
 
-    # =====================================================
+    # -------------------------------------------------
     # RESPONSE
-    # =====================================================
+    # -------------------------------------------------
 
     return {
+
         "id": product.id,
 
         "name": product.name,
@@ -189,13 +244,21 @@ def get_product(
 
         "category": product.category,
 
-        "shortDescription": (
+        "short_description": (
             product.short_description
+            if product.short_description
+            else None
         ),
 
         "description": (
             product.description
+            if product.description
+            else None
         ),
+
+        # -------------------------------------------------
+        # PRICE
+        # -------------------------------------------------
 
         "price": (
             float(product.price)
@@ -203,29 +266,20 @@ def get_product(
             else 0
         ),
 
+        # -------------------------------------------------
+        # DISCOUNT
+        # From products table
+        # -------------------------------------------------
+
         "discount": (
             float(product.discount)
             if product.discount is not None
             else 0
         ),
 
-        "quantity": (
-            float(product.quantity)
-            if product.quantity is not None
-            else 1
-        ),
-
-        "unitOfMeasure": (
-            product.unit_of_measure
-            or "piece"
-        ),
-
-        "avgReview": round(
-            avg_review,
-            2
-        ),
-
-        "reviewCount": review_count,
+        # -------------------------------------------------
+        # IMAGE
+        # -------------------------------------------------
 
         "image": (
             f"http://localhost:8000/"
@@ -233,5 +287,36 @@ def get_product(
             f"{product.image}"
             if product.image
             else None
-        )
+        ),
+
+        # -------------------------------------------------
+        # QUANTITY
+        # -------------------------------------------------
+
+        "quantity": (
+            float(product.quantity)
+            if product.quantity is not None
+            else 1
+        ),
+
+        # -------------------------------------------------
+        # UNIT OF MEASURE
+        # -------------------------------------------------
+
+        "unitOfMeasure": (
+            product.unit_of_measure
+            if product.unit_of_measure
+            else "piece"
+        ),
+
+        # -------------------------------------------------
+        # REVIEW INFORMATION
+        # -------------------------------------------------
+
+        "avgReview": round(
+            avg_review,
+            2
+        ),
+
+        "reviewCount": review_count
     }
